@@ -17,7 +17,7 @@
 #
 # Example:
 #   ./download_pride_raws.sh \
-#     -u https://ftp.pride.ebi.ac.uk/pride/data/archive/2024/10/PXD052549/ \
+#     -u https://ftp.pride.ebi.ac.uk/pride/data/archive/2026/10/PXD123456789/ \
 #     -o ./raw_data
 # ------------------------------------------------------------------------------
 
