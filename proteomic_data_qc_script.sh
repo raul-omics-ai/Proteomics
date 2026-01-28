@@ -1,41 +1,55 @@
 #!/bin/bash
 
-#############################################
-# Nombre: proteomic_data_qc_script.sh
-# Descripción:
-#   Script para automatizar el control de calidad
-#   de datos de proteómica obtenidos con MaxQuant
-#   utilizando MultiQC y el plugin de MaxQuant.
+############################################################
+# Name: proteomic_data_qc_script.sh
 #
-# Uso:
-#   qc_maxquant.sh -i <input_dir> -o <output_dir>
+# Description:
+#   Bash script to automate protein quantification
+#   quality control using MultiQC with supported
+#   proteomics software plugins.
 #
-# Opciones:
-#   -i    Directorio con archivos TXT de MaxQuant
-#   -o    Directorio de salida para el reporte MultiQC
-#   -h    Mostrar esta ayuda
+# Supported software:
+#   - maxquant   → --maxquant_plugin
+#   - diann      → --diann_plugin
+#   - quantms    → --quantms_plugin
 #
-#############################################
+# Usage:
+#   protein_qc_multiqc.sh -s <software> -i <input_dir> -o <output_dir>
+#
+# Options:
+#   -s    Protein quantification software (maxquant | diann | quantms)
+#   -i    Input directory containing quantification results
+#   -o    Output directory for MultiQC report
+#   -h    Show this help message
+#
+############################################################
 
-# Función de ayuda
+# Help function
 usage() {
-    echo "Uso: $0 -i <input_dir> -o <output_dir>"
+    echo "Usage: $0 -s <software> -i <input_dir> -o <output_dir>"
     echo
-    echo "Opciones:"
-    echo "  -i    Directorio con archivos TXT de MaxQuant"
-    echo "  -o    Directorio de salida para MultiQC"
-    echo "  -h    Mostrar esta ayuda"
+    echo "Options:"
+    echo "  -s    Protein quantification software:"
+    echo "        maxquant | diann | quantms"
+    echo "  -i    Input directory with result files"
+    echo "  -o    Output directory for MultiQC report"
+    echo "  -h    Show this help message"
     echo
     exit 1
 }
 
 # Variables
+SOFTWARE=""
 INPUT_DIR=""
 OUTPUT_DIR=""
+PLUGIN=""
 
-# Parseo de opciones
-while getopts ":i:o:h" opt; do
+# Parse options
+while getopts ":s:i:o:h" opt; do
     case ${opt} in
+        s )
+            SOFTWARE=$OPTARG
+            ;;
         i )
             INPUT_DIR=$OPTARG
             ;;
@@ -46,51 +60,70 @@ while getopts ":i:o:h" opt; do
             usage
             ;;
         \? )
-            echo "❌ Opción inválida: -$OPTARG" >&2
+            echo "Invalid option: -$OPTARG" >&2
             usage
             ;;
         : )
-            echo "❌ La opción -$OPTARG requiere un argumento." >&2
+            echo "Option -$OPTARG requires an argument." >&2
             usage
             ;;
     esac
 done
 
-# Comprobación de argumentos obligatorios
-if [[ -z "$INPUT_DIR" || -z "$OUTPUT_DIR" ]]; then
-    echo "❌ Error: faltan argumentos obligatorios."
+# Check required arguments
+if [[ -z "$SOFTWARE" || -z "$INPUT_DIR" || -z "$OUTPUT_DIR" ]]; then
+    echo "Error: missing required arguments."
     usage
 fi
 
-# Comprobación de directorios
+# Select MultiQC plugin based on software
+case "$SOFTWARE" in
+    maxquant)
+        PLUGIN="--maxquant_plugin"
+        ;;
+    diann)
+        PLUGIN="--diann_plugin"
+        ;;
+    quantms)
+        PLUGIN="--quantms_plugin"
+        ;;
+    *)
+        echo "Unsupported software: $SOFTWARE"
+        echo "Supported options: maxquant, diann, quantms"
+        exit 1
+        ;;
+esac
+
+# Check input directory
 if [[ ! -d "$INPUT_DIR" ]]; then
-    echo "❌ Error: el directorio de entrada no existe: $INPUT_DIR"
+    echo "Error: input directory does not exist: $INPUT_DIR"
     exit 1
 fi
 
-# Crear directorio de salida si no existe
+# Create output directory if needed
 if [[ ! -d "$OUTPUT_DIR" ]]; then
-    echo "📁 El directorio de salida no existe. Creándolo..."
+    echo "Output directory does not exist. Creating it..."
     mkdir -p "$OUTPUT_DIR"
 fi
 
-# Mensaje de inicio
-echo "🚀 Iniciando control de calidad con MultiQC"
-echo "📂 Entrada : $INPUT_DIR"
-echo "📊 Salida  : $OUTPUT_DIR"
+# Start message
+echo ""
+echo "Starting protein QC with MultiQC"
+echo "Software : $SOFTWARE"
+echo "Input    : $INPUT_DIR"
+echo "Output   : $OUTPUT_DIR"
 echo
 
-# Ejecución de MultiQC
-multiqc --maxquant_plugin "$INPUT_DIR" -o "$OUTPUT_DIR"
+# Run MultiQC
+multiqc $PLUGIN "$INPUT_DIR" -o "$OUTPUT_DIR"
 
-# Comprobación del estado de salida
+# Check exit status
 if [[ $? -eq 0 ]]; then
     echo
-    echo "✅ Análisis de control de calidad completado con éxito."
-    echo "📄 Reporte disponible en: $OUTPUT_DIR"
+    echo "Quality control analysis completed successfully."
+    echo "Report available at: $OUTPUT_DIR"
 else
     echo
-    echo "❌ Error durante la ejecución de MultiQC."
+    echo "Error occurred during MultiQC execution."
     exit 1
 fi
-
