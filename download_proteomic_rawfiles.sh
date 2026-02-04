@@ -2,7 +2,11 @@
 # ------------------------------------------------------------------------------
 # download_pride_raws.sh
 #
-# Download all .raw files from a PRIDE project directory.
+# Descritpion:
+#    Downloads all .raw files from a PRIDE project directory (FTP/HTTPS),
+#    and additionally downloads the cRAP contaminant FASTA database from
+#    TheGPM.
+
 #
 # Features:
 #   - Takes a PRIDE URL and an output directory as arguments
@@ -11,6 +15,9 @@
 #   - Shows a clean progress output on screen
 #   - Stores all wget verbosity in a log file (download.log)
 #   - Skips files that already exist
+#   - Automatically downloads the cRAP contaminant FASTA and renames it to:
+#     contaminants.fasta
+#
 #
 # Usage:
 #   ./download_pride_raws.sh -u <PRIDE_URL> -o <OUTPUT_DIR>
@@ -19,6 +26,12 @@
 #   ./download_pride_raws.sh \
 #     -u https://ftp.pride.ebi.ac.uk/pride/data/archive/2026/10/PXD123456789/ \
 #     -o ./raw_data
+#
+# Files generated inside OUTPUT_DIR:
+#   - AccList.txt        → list of detected .raw files on the server
+#   - contaminants.fasta → cRAP contaminant FASTA downloaded from TheGPM
+#   - download.log       → detailed wget log of all downloads
+
 # ------------------------------------------------------------------------------
 
 set -euo pipefail
@@ -55,6 +68,16 @@ mkdir -p "$OUTDIR"
 
 ACC_LIST="$OUTDIR/AccList.txt"
 LOGFILE="$OUTDIR/download.log"
+
+
+# --- Download cRAP contaminants FASTA and save as contaminants.fasta ---
+CRAP_DIR="ftp://ftp.thegpm.org/fasta/cRAP"
+CRAP_OUT="$OUTDIR/contaminants.fasta"
+
+echo "[INFO] Downloading cRAP contaminants FASTA → $CRAP_OUT"
+
+wget -q -O "$CRAP_OUT" "$CRAP_DIR/cRAP.fasta"
+
 
 echo "[INFO] Exploring PRIDE repository"
 echo "       $URL"
