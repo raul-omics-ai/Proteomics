@@ -129,9 +129,3 @@ source("3_downstream_analysis/auto_proteomic_analysis.R")
 ```
 
 ---
-
-## ✅ License
-
-Add your preferred license here (MIT, GPL-3, etc.).
-
----
