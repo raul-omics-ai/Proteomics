@@ -1,5 +1,5 @@
 
-# 📌 Automated Proteomics Workflow (LFQ – MaxQuant / DIA-NN / quantMS)
+# 📌 Automated Proteomics Workflow
 
 This repository contains a set of scripts designed to automate the complete workflow for *label-free quantification (LFQ)* proteomics data analysis—from raw file download to full statistical analysis using **DEP** in R.
 
