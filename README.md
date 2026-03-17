@@ -110,8 +110,3 @@ Raúl Fernández Contreras
 This project is open-source. You can adapt the license as needed (e.g., MIT, GPL-3).
 
 ---
-
-## Acknowledgements
-
-- DEP Bioconductor package
-- limma statistical framework
