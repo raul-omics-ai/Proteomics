@@ -18,7 +18,7 @@ The goal is to provide a reproducible, modular, and scalable pipeline for proteo
 ├── 3_downstream_analysis/
 │   └── auto_proteomic_analysis.R 
 ├── src/
-│   ├── proteomics_env_r4.1.3_11022026.yaml
+│   ├── proteomics_env_r4.1.3_27032026.yaml
 │   └── Guia_MaxQuant_Windows.txt
 └── README.md
 ```
