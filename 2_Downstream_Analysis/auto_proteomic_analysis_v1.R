@@ -570,7 +570,7 @@ auto_proteomic_analysis <- function(ms2_file_path,
     # renombrar ratio → log2FC
     rename(log2FC = all_of(ratio_col))
   
-  rm(de_cols, centered_cols, ratio_col, pval_cols, padj_cols, sig_contrast)
+  rm(de_cols, centered_cols, ratio_col, padj_cols, sig_contrast)
   
   addWorksheet(wb, "DE_Result")
   writeDataTable(wb, sheet = "DE_Result", x = data_results_clean)
@@ -596,7 +596,8 @@ auto_proteomic_analysis <- function(ms2_file_path,
   dev.off()
   
   # VolcanoPlot
-  volcano_plot <- plot_volcano(de_proteins, contrast = "rd10_vs_WT", 
+  contrast <- stringr::str_remove(pval_cols, pattern = "_p\\.val")
+  volcano_plot <- plot_volcano(de_proteins, contrast = contrast, 
                                label_size = 2, add_names = TRUE, plot = FALSE) %>%
     mutate(
       threshold = factor(
@@ -645,7 +646,7 @@ auto_proteomic_analysis <- function(ms2_file_path,
   # p-value distribution
   ## Plot histogram of raw p-values
   pval_distribution <- data_results %>%
-    ggplot(aes(x = rd10_vs_WT_p.val)) +
+    ggplot(aes(x = .data[[pval_cols]])) +
     geom_histogram(binwidth = 0.025) +
     labs(x = "P-value", y = "Frequency") +
     ggtitle("P-value distribution following Limma eBayes trend model") +
