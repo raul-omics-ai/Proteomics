@@ -78,7 +78,7 @@
 #'   title = "My_Proteomics_Run"
 #' )
 #' }
-#'
+#' @version 2
 #' @export
 
 auto_proteomic_analysis <- function(ms2_file_path, 
